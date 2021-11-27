@@ -12,9 +12,12 @@ declare(strict_types=1);
 namespace Hao\ORMJsonRelation\Relation;
 
 use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Relations\HasMany;
 
-class HasManyJsonContains extends HasOneOrManyJsonContains
+class HasManyJsonContains extends HasMany
 {
+    use HasOneOrManyJsonContains;
+
     /**
      * Get the results of the relationship.
      */

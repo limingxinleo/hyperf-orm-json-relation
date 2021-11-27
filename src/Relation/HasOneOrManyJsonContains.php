@@ -15,9 +15,8 @@ use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\Constraint;
-use Hyperf\Database\Model\Relations\HasOneOrMany;
 
-abstract class HasOneOrManyJsonContains extends HasOneOrMany
+trait HasOneOrManyJsonContains
 {
     public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, protected string $path = '$')
     {

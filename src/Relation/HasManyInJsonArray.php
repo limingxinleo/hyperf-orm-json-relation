@@ -74,7 +74,7 @@ class HasManyInJsonArray extends HasMany
             $value = [];
             foreach ($json as $key) {
                 if (isset($dictionary[$key])) {
-                    $value[] = $dictionary[$key];
+                    $value = array_merge($value, $dictionary[$key]);
                 }
             }
 

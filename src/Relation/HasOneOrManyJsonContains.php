@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Hao\ORMJsonRelation\Relation;
 
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\Constraint;
 use Hyperf\Database\Model\Relations\HasOneOrMany;
@@ -53,5 +54,30 @@ abstract class HasOneOrManyJsonContains extends HasOneOrMany
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * Build model dictionary keyed by the relation's foreign key.
+     *
+     * @return array
+     */
+    protected function buildDictionary(Collection $results)
+    {
+        $foreign = $this->getForeignKeyName();
+
+        return $results->mapToDictionary(function ($result) use ($foreign) {
+            $path = $this->getPath();
+            $path = match ($path) {
+                '$' => null,
+                default => str_replace('$.', '', $path)
+            };
+
+            $array = data_get($result->{$foreign}, $path);
+            $ret = [];
+            foreach ($array as $key) {
+                $ret[$key] = $result;
+            }
+            return $ret;
+        })->all();
     }
 }

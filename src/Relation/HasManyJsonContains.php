@@ -11,44 +11,9 @@ declare(strict_types=1);
  */
 namespace Hao\ORMJsonRelation\Relation;
 
-use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\HasMany;
 
 class HasManyJsonContains extends HasMany
 {
     use HasOneOrManyJsonContains;
-
-    /**
-     * Get the results of the relationship.
-     */
-    public function getResults()
-    {
-        return $this->query->get();
-    }
-
-    /**
-     * Initialize the relation on a set of models.
-     *
-     * @param string $relation
-     * @return array
-     */
-    public function initRelation(array $models, $relation)
-    {
-        foreach ($models as $model) {
-            $model->setRelation($relation, $this->related->newCollection());
-        }
-
-        return $models;
-    }
-
-    /**
-     * Match the eagerly loaded results to their parents.
-     *
-     * @param string $relation
-     * @return array
-     */
-    public function match(array $models, Collection $results, $relation)
-    {
-        return $this->matchMany($models, $results, $relation);
-    }
 }

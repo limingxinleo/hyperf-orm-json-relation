@@ -15,7 +15,8 @@ jobs:
         php-version: ['8.0']
         mysql-version: [ '5.7', '8.0' ]
         engine: ['none', 'swoole', 'swow']
-      max-parallel: 5
+      max-parallel: 6
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -61,6 +62,7 @@ jobs:
           sudo make install
           sudo sh -c "echo extension=swow > /etc/php/${{ matrix.php-version }}/cli/conf.d/swow.ini"
           php --ri swow
+          composer require "hyperf/engine-swow:^1.2" -o
       - name: Setup Packages
         run: composer update -o --no-scripts
       - name: Run Test Cases

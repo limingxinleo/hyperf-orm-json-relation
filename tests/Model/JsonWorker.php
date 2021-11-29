@@ -11,12 +11,16 @@ declare(strict_types=1);
  */
 namespace HyperfTest\Model;
 
+use Hao\ORMJsonRelation\HasORMJsonRelations;
+
 /**
  * @property int $id
  * @property string $name
  */
 class JsonWorker extends Model
 {
+    use HasORMJsonRelations;
+
     /**
      * The table associated with the model.
      *
@@ -37,4 +41,9 @@ class JsonWorker extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer'];
+
+    public function mains()
+    {
+        return $this->hasManyJsonContains(JsonMain::class, 'workers', 'id');
+    }
 }

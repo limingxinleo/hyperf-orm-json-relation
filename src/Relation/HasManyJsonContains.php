@@ -11,14 +11,17 @@ declare(strict_types=1);
  */
 namespace Hao\ORMJsonRelation\Relation;
 
-use Hyperf\Database\Model\Relations\HasMany;
+use Hao\ORMJsonRelation\HasJson;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\Constraint;
+use Hyperf\Database\Model\Relations\HasMany;
 
 class HasManyJsonContains extends HasMany
 {
+    use HasJson;
+
     public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, protected string $path = '$')
     {
         parent::__construct($query, $parent, $foreignKey, $localKey);
@@ -30,7 +33,7 @@ class HasManyJsonContains extends HasMany
     public function addConstraints()
     {
         if (Constraint::isConstraint()) {
-            $this->query->whereRaw("JSON_CONTAINS({$this->foreignKey}, ?, ?)", [$this->getParentKey(), $this->getPath()]);
+            $this->query->whereJsonContains($this->foreignKey, $this->getParentKey());
 
             $this->query->whereNotNull($this->foreignKey);
         }
@@ -43,10 +46,9 @@ class HasManyJsonContains extends HasMany
     {
         $keys = $this->getKeys($models, $this->localKey);
         $foreignKey = $this->foreignKey;
-        $path = $this->getPath();
-        $this->query->where(static function (Builder $query) use ($keys, $foreignKey, $path) {
+        $this->query->where(static function (Builder $query) use ($keys, $foreignKey) {
             foreach ($keys as $key) {
-                $query->orWhereRaw("JSON_CONTAINS({$foreignKey}, ?, ?)", [$key, $path]);
+                $query->orWhereJsonContains($foreignKey, $key);
             }
         });
     }
@@ -65,19 +67,31 @@ class HasManyJsonContains extends HasMany
     {
         $foreign = $this->getForeignKeyName();
 
-        return $results->mapToDictionary(function ($result) use ($foreign) {
-            $path = $this->getPath();
-            $path = match ($path) {
-                '$' => null,
-                default => str_replace('$.', '', $path)
-            };
+        $dictionary = [];
+        foreach ($results as $result) {
+            $pairs = value(function () use ($result, $foreign) {
+                $path = $this->getPath();
+                $path = match ($path) {
+                    '$' => null,
+                    default => str_replace('$.', '', $path)
+                };
 
-            $array = data_get($result->{$foreign}, $path);
-            $ret = [];
-            foreach ($array as $key) {
-                $ret[$key] = $result;
+                $array = data_get($result->{$foreign}, $path);
+                $ret = [];
+                foreach ($array as $key) {
+                    $ret[$key] = $result;
+                }
+                return $ret;
+            });
+
+            foreach ($pairs as $key => $value) {
+                if (! isset($dictionary[$key])) {
+                    $dictionary[$key] = [];
+                }
+                $dictionary[$key][] = $value;
             }
-            return $ret;
-        })->all();
+        }
+
+        return $dictionary;
     }
 }

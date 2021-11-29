@@ -31,7 +31,7 @@ class HasManyJsonContainsTest extends AbstractTestCase
             $bag = SQLBag::instance();
             $asserts = [
                 'select * from `json_worker` where `json_worker`.`id` = ? limit 1',
-                'select * from `json_main` where JSON_CONTAINS(json_main.workers, ?, ?) and `json_main`.`workers` is not null',
+                'select * from `json_main` where json_contains(`json_main`.`workers`, ?) and `json_main`.`workers` is not null',
             ];
             while ($event = $bag->shift()) {
                 $this->assertSame(array_shift($asserts), $event->sql);
@@ -44,14 +44,15 @@ class HasManyJsonContainsTest extends AbstractTestCase
         $this->runInCoroutine(function () {
             $models = JsonWorker::query()->find([1, 2]);
             $models->load('mains');
+            $i = 1;
             foreach ($models as $model) {
-                $model->mains;
+                $this->assertSame($i++, $model->mains->count());
             }
 
             $bag = SQLBag::instance();
             $asserts = [
                 'select * from `json_worker` where `json_worker`.`id` in (?, ?)',
-                'select * from `json_main` where (JSON_CONTAINS(json_main.workers, ?, ?) or JSON_CONTAINS(json_main.workers, ?, ?))',
+                'select * from `json_main` where (json_contains(`json_main`.`workers`, ?) or json_contains(`json_main`.`workers`, ?))',
             ];
             while ($event = $bag->shift()) {
                 $this->assertSame(array_shift($asserts), $event->sql);
@@ -70,8 +71,8 @@ class HasManyJsonContainsTest extends AbstractTestCase
             $bag = SQLBag::instance();
             $asserts = [
                 'select * from `json_worker` where `json_worker`.`id` in (?, ?)',
-                'select * from `json_main` where JSON_CONTAINS(json_main.workers, ?, ?) and `json_main`.`workers` is not null',
-                'select * from `json_main` where JSON_CONTAINS(json_main.workers, ?, ?) and `json_main`.`workers` is not null',
+                'select * from `json_main` where json_contains(`json_main`.`workers`, ?) and `json_main`.`workers` is not null',
+                'select * from `json_main` where json_contains(`json_main`.`workers`, ?) and `json_main`.`workers` is not null',
             ];
             while ($event = $bag->shift()) {
                 $this->assertSame(array_shift($asserts), $event->sql);

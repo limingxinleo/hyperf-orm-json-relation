@@ -15,14 +15,22 @@ use Hyperf\Utils\Codec\Json;
 
 trait HasJson
 {
-    public function getJsonData(array $json, string $path = '$')
+    public function getJsonData(array $json, string $path)
     {
-        $path = match ($path) {
-            '$' => null,
-            default => str_replace('$.', '', $path)
-        };
-
         return data_get($json, $path);
+    }
+
+    public function getPath(string $foreign): array
+    {
+        $data = explode('->', $foreign);
+
+        $attribute = array_shift($data);
+
+        if (empty($data)) {
+            return [$attribute, null];
+        }
+
+        return [$attribute, implode('.', $data)];
     }
 
     public function getJsonArrayFromModel($model, $key): array

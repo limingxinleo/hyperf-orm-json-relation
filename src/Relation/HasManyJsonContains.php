@@ -22,11 +22,6 @@ class HasManyJsonContains extends HasMany
 {
     use HasJson;
 
-    public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, protected string $path = '$')
-    {
-        parent::__construct($query, $parent, $foreignKey, $localKey);
-    }
-
     /**
      * Set the base constraints on the relation query.
      */
@@ -53,11 +48,6 @@ class HasManyJsonContains extends HasMany
         });
     }
 
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
     /**
      * Build model dictionary keyed by the relation's foreign key.
      *
@@ -70,13 +60,8 @@ class HasManyJsonContains extends HasMany
         $dictionary = [];
         foreach ($results as $result) {
             $pairs = value(function () use ($result, $foreign) {
-                $path = $this->getPath();
-                $path = match ($path) {
-                    '$' => null,
-                    default => str_replace('$.', '', $path)
-                };
-
-                $array = data_get($result->{$foreign}, $path);
+                [$modelKey, $path] = $this->getPath($foreign);
+                $array = data_get($result->{$modelKey}, $path);
                 $ret = [];
                 foreach ($array as $key) {
                     $ret[$key] = $result;

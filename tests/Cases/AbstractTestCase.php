@@ -18,7 +18,6 @@ use Hyperf\Database\Events\QueryExecuted;
 use Hyperf\Database\Model\Register;
 use Hyperf\Engine\Constant;
 use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Coroutine;
 use HyperfTest\Model\SQLBag;
 use Mockery;
 use PHPUnit\Framework\TestCase;
@@ -73,10 +72,13 @@ abstract class AbstractTestCase extends TestCase
 
     public function runInCoroutine(callable $callable)
     {
-        if (Constant::ENGINE === 'Swoole' && Coroutine::inCoroutine()) {
-            run($callable);
-        } else {
-            $callable();
+        if (extension_loaded('swoole') || extension_loaded('swow')) {
+            if (Constant::ENGINE === 'Swoole') {
+                run($callable);
+                return;
+            }
         }
+
+        $callable();
     }
 }

@@ -12,9 +12,7 @@ declare(strict_types=1);
 namespace Hao\ORMJsonRelation\Relation;
 
 use Hao\ORMJsonRelation\HasJson;
-use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
-use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\Constraint;
 use Hyperf\Database\Model\Relations\HasMany;
 
@@ -22,20 +20,16 @@ class HasManyInJsonArray extends HasMany
 {
     use HasJson;
 
-    public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, protected string $path = '$')
-    {
-        parent::__construct($query, $parent, $foreignKey, $localKey);
-    }
-
     /**
      * Set the base constraints on the relation query.
      */
     public function addConstraints()
     {
         if (Constraint::isConstraint()) {
-            $json = $this->getJsonArrayFromModel($this->parent, $this->localKey);
+            [$key, $path] = $this->getPath($this->localKey);
+            $json = $this->getJsonArrayFromModel($this->parent, $key);
 
-            $this->query->whereIn($this->foreignKey, $this->getJsonData($json, $this->getPath()));
+            $this->query->whereIn($this->foreignKey, data_get($json, $path));
 
             $this->query->whereNotNull($this->foreignKey);
         }
@@ -48,29 +42,28 @@ class HasManyInJsonArray extends HasMany
     {
         $keys = [];
         foreach ($models as $model) {
-            $json = $this->getJsonArrayFromModel($model, $this->localKey);
+            [$key, $path] = $this->getPath($this->localKey);
 
-            $keys = array_merge($keys, $this->getJsonData($json, $this->getPath()));
+            $json = $this->getJsonArrayFromModel($model, $key);
+
+            $keys = array_merge($keys, data_get($json, $path));
         }
 
         $this->query->whereIn($this->foreignKey, array_values(array_unique($keys)));
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
     }
 
     protected function matchOneOrMany(array $models, Collection $results, $relation, $type)
     {
         $dictionary = $this->buildDictionary($results);
 
+        [$modelKey, $path] = $this->getPath($this->localKey);
+
         // Once we have the dictionary we can simply spin through the parent models to
         // link them up with their children using the keyed dictionary to make the
         // matching very convenient and easy work. Then we'll just return them.
         foreach ($models as $model) {
-            $json = $this->getJsonArrayFromModel($model, $this->localKey);
-            $json = $this->getJsonData($json, $this->getPath());
+            $json = $this->getJsonArrayFromModel($model, $modelKey);
+            $json = data_get($json, $path);
             $value = [];
             foreach ($json as $key) {
                 if (isset($dictionary[$key])) {

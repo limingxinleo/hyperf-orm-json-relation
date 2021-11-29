@@ -39,6 +39,25 @@ class HasManyJsonContainsTest extends AbstractTestCase
         });
     }
 
+    public function testHasManyContainsInJsonData()
+    {
+        $this->runInCoroutine(function () {
+            $model = JsonWorker::query()->find(1);
+            foreach ($model->mainsInData as $main) {
+                $this->assertSame(2, $main->id);
+            }
+
+            $bag = SQLBag::instance();
+            $asserts = [
+                'select * from `json_worker` where `json_worker`.`id` = ? limit 1',
+                "select * from `json_main` where json_contains(`json_main`.`data`, ?, '$.\"worker_ids\"') and json_unquote(json_extract(`json_main`.`data`, '$.\"worker_ids\"')) is not null",
+            ];
+            while ($event = $bag->shift()) {
+                $this->assertSame(array_shift($asserts), $event->sql);
+            }
+        });
+    }
+
     public function testEagerLoadHasManyContains()
     {
         $this->runInCoroutine(function () {
@@ -53,6 +72,27 @@ class HasManyJsonContainsTest extends AbstractTestCase
             $asserts = [
                 'select * from `json_worker` where `json_worker`.`id` in (?, ?)',
                 'select * from `json_main` where (json_contains(`json_main`.`workers`, ?) or json_contains(`json_main`.`workers`, ?))',
+            ];
+            while ($event = $bag->shift()) {
+                $this->assertSame(array_shift($asserts), $event->sql);
+            }
+        });
+    }
+
+    public function testEagerLoadHasManyContainsInJsonData()
+    {
+        $this->runInCoroutine(function () {
+            $model = JsonWorker::query()->find(1);
+            $model->load('mainsInData');
+
+            foreach ($model->mainsInData as $main) {
+                $this->assertSame(2, $main->id);
+            }
+
+            $bag = SQLBag::instance();
+            $asserts = [
+                'select * from `json_worker` where `json_worker`.`id` = ? limit 1',
+                "select * from `json_main` where (json_contains(`json_main`.`data`, ?, '$.\"worker_ids\"'))",
             ];
             while ($event = $bag->shift()) {
                 $this->assertSame(array_shift($asserts), $event->sql);

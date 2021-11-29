@@ -46,4 +46,9 @@ class JsonWorker extends Model
     {
         return $this->hasManyJsonContains(JsonMain::class, 'workers', 'id');
     }
+
+    public function mainsInData()
+    {
+        return $this->hasManyJsonContains(JsonMain::class, 'data->worker_ids', 'id');
+    }
 }

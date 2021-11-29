@@ -62,6 +62,45 @@ class HasManyInJsonArrayTest extends AbstractTestCase
         });
     }
 
+    public function testHasManyInJsonData()
+    {
+        $this->runInCoroutine(function () {
+            $mains = JsonMain::query()->find([1, 2])->getDictionary();
+            $this->assertTrue($mains[1]->workersInData->isEmpty());
+            $this->assertSame(2, $mains[2]->workersInData->count());
+
+            $bag = SQLBag::instance();
+            $asserts = [
+                'select * from `json_main` where `json_main`.`id` in (?, ?)',
+                'select * from `json_worker` where 0 = 1 and `json_worker`.`id` is not null',
+                'select * from `json_worker` where `json_worker`.`id` in (?, ?) and `json_worker`.`id` is not null',
+            ];
+            while ($event = $bag->shift()) {
+                $this->assertSame(array_shift($asserts), $event->sql);
+            }
+        });
+    }
+
+    public function testEagerLoadHasManyInJsonData()
+    {
+        $this->runInCoroutine(function () {
+            $mains = JsonMain::query()->find([1, 2]);
+            $mains->load('workersInData');
+            $mains = $mains->getDictionary();
+            $this->assertTrue($mains[1]->workersInData->isEmpty());
+            $this->assertSame(2, $mains[2]->workersInData->count());
+
+            $bag = SQLBag::instance();
+            $asserts = [
+                'select * from `json_main` where `json_main`.`id` in (?, ?)',
+                'select * from `json_worker` where `json_worker`.`id` in (?, ?)',
+            ];
+            while ($event = $bag->shift()) {
+                $this->assertSame(array_shift($asserts), $event->sql);
+            }
+        });
+    }
+
     public function testManyHasManyInJson()
     {
         $this->runInCoroutine(function () {

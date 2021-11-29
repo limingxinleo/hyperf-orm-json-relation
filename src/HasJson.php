@@ -17,7 +17,7 @@ trait HasJson
 {
     public function getJsonData(array $json, string $path)
     {
-        return data_get($json, $path);
+        return data_get($json, $path, []);
     }
 
     public function getPath(string $foreign): array

@@ -12,13 +12,21 @@ declare(strict_types=1);
 namespace HyperfTest\Model;
 
 use Hyperf\Database\Events\QueryExecuted;
-use Hyperf\Utils\Traits\StaticInstance;
 
 class SQLBag
 {
-    use StaticInstance;
-
     public array $sqls = [];
+
+    private static $instance;
+
+    public static function instance()
+    {
+        if (static::$instance) {
+            return static::$instance;
+        }
+
+        return static::$instance = new self();
+    }
 
     public function insert(QueryExecuted $executed): void
     {

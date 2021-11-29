@@ -25,7 +25,7 @@ trait HasORMJsonRelations
     /**
      * 查询本体在 related 中某个 json 结构中存在的 related.
      */
-    public function hasManyJsonContains(string $related, string $foreignKey, ?string $localKey = null, ?string $path = null): HasMany
+    public function hasManyJsonContains(string $related, string $foreignKey, ?string $localKey = null): HasMany
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -35,15 +35,14 @@ trait HasORMJsonRelations
             $instance->newQuery(),
             $this,
             $instance->getTable() . '.' . $foreignKey,
-            $localKey,
-            $path ?? '$'
+            $localKey
         );
     }
 
     /**
      * 查询本体某个 json 数组中所有的 related.
      */
-    public function hasManyInJsonArray(string $related, string $foreignKey, ?string $localKey = null, ?string $path = null): HasMany
+    public function hasManyInJsonArray(string $related, string $foreignKey, ?string $localKey = null): HasMany
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -53,8 +52,7 @@ trait HasORMJsonRelations
             $instance->newQuery(),
             $this,
             $instance->getTable() . '.' . $foreignKey,
-            $localKey,
-            $path ?? '$'
+            $localKey
         );
     }
 

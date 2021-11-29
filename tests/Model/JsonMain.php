@@ -47,4 +47,9 @@ class JsonMain extends Model
     {
         return $this->hasManyInJsonArray(JsonWorker::class, 'id', 'workers');
     }
+
+    public function workersInData()
+    {
+        return $this->hasManyInJsonArray(JsonWorker::class, 'id', 'data->worker_ids');
+    }
 }

@@ -29,7 +29,7 @@ class HasManyInJsonArray extends HasMany
             [$key, $path] = $this->getPath($this->localKey);
             $json = $this->getJsonArrayFromModel($this->parent, $key);
 
-            $this->query->whereIn($this->foreignKey, data_get($json, $path));
+            $this->query->whereIn($this->foreignKey, data_get($json, $path, []));
 
             $this->query->whereNotNull($this->foreignKey);
         }
@@ -46,7 +46,7 @@ class HasManyInJsonArray extends HasMany
 
             $json = $this->getJsonArrayFromModel($model, $key);
 
-            $keys = array_merge($keys, data_get($json, $path));
+            $keys = array_merge($keys, data_get($json, $path, []));
         }
 
         $this->query->whereIn($this->foreignKey, array_values(array_unique($keys)));
@@ -63,7 +63,7 @@ class HasManyInJsonArray extends HasMany
         // matching very convenient and easy work. Then we'll just return them.
         foreach ($models as $model) {
             $json = $this->getJsonArrayFromModel($model, $modelKey);
-            $json = data_get($json, $path);
+            $json = data_get($json, $path, []);
             $value = [];
             foreach ($json as $key) {
                 if (isset($dictionary[$key])) {

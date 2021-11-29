@@ -61,7 +61,7 @@ class HasManyJsonContains extends HasMany
         foreach ($results as $result) {
             $pairs = value(function () use ($result, $foreign) {
                 [$modelKey, $path] = $this->getPath($foreign);
-                $array = data_get($result->{$modelKey}, $path);
+                $array = data_get($result->{$modelKey}, $path, []);
                 $ret = [];
                 foreach ($array as $key) {
                     $ret[$key] = $result;

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.35-log)
 # Database: hyperf
-# Generation Time: 2021-11-29 10:13:16 +0000
+# Generation Time: 2021-12-01 11:36:20 +0000
 # ************************************************************
 
 
@@ -30,17 +30,18 @@ CREATE TABLE `json_main` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `workers` json NOT NULL,
   `data` json NOT NULL,
+  `worker_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `json_main` WRITE;
 /*!40000 ALTER TABLE `json_main` DISABLE KEYS */;
 
-INSERT INTO `json_main` (`id`, `workers`, `data`)
+INSERT INTO `json_main` (`id`, `workers`, `data`, `worker_id`)
 VALUES
-	(1,'[1, 2, 3]','{}'),
-	(2,'[2, 3]','{\"worker_ids\": [1, 2]}'),
-	(3,'[3]','{\"worker_ids\": [2]}');
+	(1,'[1, 2, 3]','{}',0),
+	(2,'[2, 3]','{\"worker_id\": 1, \"worker_ids\": [1, 2]}',1),
+	(3,'[3]','{\"worker_ids\": [2]}',0);
 
 /*!40000 ALTER TABLE `json_main` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -13,9 +13,11 @@ namespace Hao\ORMJsonRelation;
 
 use Hao\ORMJsonRelation\Relation\HasManyInJsonArray;
 use Hao\ORMJsonRelation\Relation\HasManyJsonContains;
+use Hao\ORMJsonRelation\Relation\HasOneInJsonObject;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOne;
 
 /**
  * @mixin Model
@@ -54,6 +56,28 @@ trait HasORMJsonRelations
             $instance->getTable() . '.' . $foreignKey,
             $localKey
         );
+    }
+
+    /**
+     * 查询本体某个 json 结构中相关的一条 related.
+     */
+    public function hasOneInJsonObject(string $related, string $foreignKey, ?string $localKey = null): HasOne
+    {
+        $instance = $this->newRelatedInstance($related);
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return $this->newHasOneInJsonObject(
+            $instance->newQuery(),
+            $this,
+            $instance->getTable() . '.' . $foreignKey,
+            $localKey
+        );
+    }
+
+    protected function newHasOneInJsonObject(Builder $query, Model $parent, string $foreignKey, string $localKey)
+    {
+        return new HasOneInJsonObject($query, $parent, $foreignKey, $localKey);
     }
 
     protected function newHasManyInJsonArray(Builder $query, Model $parent, string $foreignKey, string $localKey, string $path = '$')

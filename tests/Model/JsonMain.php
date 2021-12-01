@@ -52,4 +52,14 @@ class JsonMain extends Model
     {
         return $this->hasManyInJsonArray(JsonWorker::class, 'id', 'data->worker_ids');
     }
+
+    public function workerInData()
+    {
+        return $this->hasOneInJsonObject(JsonWorker::class, 'id', 'data->worker_id');
+    }
+
+    public function worker()
+    {
+        return $this->hasOne(JsonWorker::class, 'id', 'worker_id');
+    }
 }

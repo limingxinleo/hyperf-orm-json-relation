@@ -62,6 +62,10 @@ class HasOneInJsonObjectTest extends AbstractTestCase
         $this->runInCoroutine(function () {
             $main = JsonMain::query()->find([1, 2]);
             $main->load('worker');
+            /** @var JsonMain $v */
+            foreach ($main as $v) {
+                $this->assertTrue($v->relationLoaded('worker'));
+            }
             $this->assertNull($main[0]->worker);
             $this->assertSame(1, $main[1]->worker->id);
 
@@ -78,6 +82,10 @@ class HasOneInJsonObjectTest extends AbstractTestCase
         $this->runInCoroutine(function () {
             $main = JsonMain::query()->find([1, 2]);
             $main->load('workerInData');
+            /** @var JsonMain $v */
+            foreach ($main as $v) {
+                $this->assertTrue($v->relationLoaded('workerInData'));
+            }
             $this->assertNull($main[0]->workerInData);
             $this->assertSame(1, $main[1]->workerInData->id);
 

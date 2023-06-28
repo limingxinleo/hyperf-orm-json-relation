@@ -27,21 +27,21 @@ class JsonMain extends Model
      *
      * @var string
      */
-    protected $table = 'json_main';
+    protected ?string $table = 'json_main';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['id', 'workers', 'data'];
+    protected array $fillable = ['id', 'workers', 'data'];
 
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'data' => 'json', 'workers' => 'json'];
+    protected array $casts = ['id' => 'integer', 'data' => 'json', 'workers' => 'json'];
 
     public function workerModels()
     {

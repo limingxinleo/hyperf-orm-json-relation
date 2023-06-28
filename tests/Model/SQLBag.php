@@ -30,7 +30,7 @@ class SQLBag
 
     public function insert(QueryExecuted $executed): void
     {
-        array_push($this->sqls, $executed);
+        $this->sqls[] = $executed;
     }
 
     public function shift(): ?QueryExecuted

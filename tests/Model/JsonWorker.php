@@ -26,21 +26,21 @@ class JsonWorker extends Model
      *
      * @var string
      */
-    protected $table = 'json_worker';
+    protected ?string $table = 'json_worker';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['id', 'name'];
+    protected array $fillable = ['id', 'name'];
 
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer'];
+    protected array $casts = ['id' => 'integer'];
 
     public function mains()
     {

@@ -19,7 +19,6 @@ use Hyperf\Database\Model\Register;
 use Hyperf\Engine\Constant;
 use Hyperf\Utils\ApplicationContext;
 use HyperfTest\Model\SQLBag;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -31,7 +30,7 @@ abstract class AbstractTestCase extends TestCase
 {
     protected function setUp(): void
     {
-        $container = Mockery::mock(ContainerInterface::class);
+        $container = \Mockery::mock(ContainerInterface::class);
         ApplicationContext::setContainer($container);
 
         $container->shouldReceive('has')->andReturn(true);
@@ -55,7 +54,7 @@ abstract class AbstractTestCase extends TestCase
         $resolver = new ConnectionResolver(['default' => $connection]);
 
         Register::setConnectionResolver($resolver);
-        Register::setEventDispatcher($dispatcher = Mockery::mock(EventDispatcherInterface::class));
+        Register::setEventDispatcher($dispatcher = \Mockery::mock(EventDispatcherInterface::class));
         $connection->setEventDispatcher($dispatcher);
 
         $dispatcher->shouldReceive('dispatch')->withAnyArgs()->andReturnUsing(function (object $event) {
@@ -67,7 +66,7 @@ abstract class AbstractTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
     }
 
     public function runInCoroutine(callable $callable)

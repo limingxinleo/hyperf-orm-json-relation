@@ -16,6 +16,8 @@ use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\Constraint;
 use Hyperf\Database\Model\Relations\HasMany;
 
+use function Hyperf\Collection\data_get;
+
 class HasManyInJsonArray extends HasMany
 {
     use HasJson;

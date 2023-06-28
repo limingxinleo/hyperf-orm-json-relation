@@ -16,6 +16,8 @@ use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\Constraint;
 use Hyperf\Database\Model\Relations\HasOne;
 
+use function Hyperf\Collection\data_get;
+
 class HasOneInJsonObject extends HasOne
 {
     use HasJson;

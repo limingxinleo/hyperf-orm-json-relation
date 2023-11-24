@@ -14,4 +14,6 @@ namespace HyperfTest\Model;
 
 use Hyperf\Database\Model\Model as BaseModel;
 
-abstract class Model extends BaseModel {}
+abstract class Model extends BaseModel
+{
+}

@@ -1,6 +1,6 @@
 name: PHPUnit
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 env:
   SWOOLE_VERSION: '5.0.3'
@@ -12,9 +12,9 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        php-version: ['8.0', '8.1', '8.2']
+        php-version: [ '8.0', '8.1', '8.2', '8.3' ]
         mysql-version: [ '5.7', '8.0' ]
-        engine: ['none', 'swoole', 'swow']
+        engine: [ 'none', 'swoole', 'swow' ]
       max-parallel: 6
       fail-fast: false
     steps:

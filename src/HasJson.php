@@ -12,7 +12,9 @@ declare(strict_types=1);
 
 namespace Hao\ORMJsonRelation;
 
-use Hyperf\Utils\Codec\Json;
+use Hyperf\Codec\Json;
+
+use function Hyperf\Collection\data_get;
 
 trait HasJson
 {
@@ -37,6 +39,10 @@ trait HasJson
     public function getJsonArrayFromModel($model, $key): array
     {
         $json = $model->getAttribute($key);
+        if (! $json) {
+            return [];
+        }
+
         if (! is_array($json)) {
             $json = Json::decode((string) $json);
         }
